@@ -15,6 +15,7 @@ import numpy as np
 from numpy.testing import assert_allclose
 
 import pytest
+from matplotlib.widgets import Button
 
 
 @pytest.fixture
@@ -1530,3 +1531,40 @@ def test_MultiCursor(horizOn, vertOn):
         assert l.get_xdata() == (.5, .5)
     for l in multi.hlines:
         assert l.get_ydata() == (.25, .25)
+
+@pytest.mark.backend('Qt5Agg')
+def test_button():
+        freqs = np.arange(2, 20, 3)
+
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=0.2)
+        t = np.arange(0.0, 1.0, 0.001)
+        s = np.sin(2 * np.pi * freqs[0] * t)
+        l, = ax.plot(t, s, lw=2)
+
+        class Index:
+            ind = 0
+
+            def next(self, event):
+                self.ind += 1
+                i = self.ind % len(freqs)
+                ydata = np.sin(2 * np.pi * freqs[i] * t)
+                l.set_ydata(ydata)
+                plt.draw()
+
+            def prev(self, event):
+                self.ind -= 1
+                i = self.ind % len(freqs)
+                ydata = np.sin(2 * np.pi * freqs[i] * t)
+                l.set_ydata(ydata)
+                plt.draw()
+
+        callback = Index()
+        axprev = fig.add_axes([0.7, 0.05, 0.1, 0.075])
+        axnext = fig.add_axes([0.81, 0.05, 0.1, 0.075])
+        bnext = widgets.Button(axnext, label='Next', color="0.85", text_color="#ff0000")
+        bnext.on_clicked(callback.next)
+        bprev = widgets.Button(axprev, 'Previous')
+        bprev.on_clicked(callback.prev)
+
+        plt.show()

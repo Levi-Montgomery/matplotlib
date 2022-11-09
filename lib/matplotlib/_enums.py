@@ -2,7 +2,7 @@
 Enums representing sets of strings that Matplotlib uses as input parameters.
 
 Matplotlib often uses simple data types like strings or tuples to define a
-concept; e.g. the line capstyle can be specified as one of 'butt', 'round',
+concept; e.g. the line capstyle can be specified as one of 'butt', 'ro cound',
 or 'projecting'. The classes in this module are used internally and serve to
 document these concepts formally.
 
