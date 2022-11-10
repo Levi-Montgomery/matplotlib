@@ -130,7 +130,43 @@ class AxesWidget(Widget):
         """Disconnect all events created by this widget."""
         for c in self._cids:
             self.canvas.mpl_disconnect(c)
+    
+    def round_borders(self, radius=0.25, padding=0.01):
+        ax = self.ax
+        color = ax.get_facecolor()
+        self.color = 'w'
+        ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
+        ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
+        ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
+        ax.add_patch(mpl.pyplot.Circle(( 1 - (radius + padding), 1 - (radius + padding)), radius, color=color))
+        ax.add_patch(mpl.pyplot.Circle((1 - (radius + padding), radius + padding), radius, color=color))
+        ax.add_patch(mpl.pyplot.Circle((radius + padding, 1 - (radius + padding)), radius, color=color))
 
+    def remove_border(self):
+        ax = self.ax
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+
+
+    def round_borders(self, radius=0.25, padding=0.01):
+        ax = self.ax
+        color = ax.get_facecolor()
+        self.color = 'w'
+        ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
+        ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
+        ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
+        ax.add_patch(mpl.pyplot.Circle(( 1 - (radius + padding), 1 - (radius + padding)), radius, color=color))
+        ax.add_patch(mpl.pyplot.Circle((1 - (radius + padding), radius + padding), radius, color=color))
+        ax.add_patch(mpl.pyplot.Circle((radius + padding, 1 - (radius + padding)), radius, color=color))
+
+    def remove_border(self):
+        ax = self.ax
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
 
 class Button(AxesWidget):
     """
@@ -152,7 +188,7 @@ class Button(AxesWidget):
     """
 
     def __init__(self, ax, label, image=None,
-                 color='0.85', hovercolor='0.95'):
+                 color='0.85', hovercolor='0.95', text_color=".10", style=""):
         """
         Parameters
         ----------
@@ -167,14 +203,43 @@ class Button(AxesWidget):
             The color of the button when not activated.
         hovercolor : color
             The color of the button when the mouse is over it.
+        text_color : color
+            The color of the text label inside the button.
+        style : str
+            A pre-defined style. Style names:
+            "pastel-blue", "lavender", "tangerine", "pastel-green"
         """
         super().__init__(ax)
+        if style == "pastel-blue":
+            color = "#96B9D0"
+            hovercolor = "#BFD4DB"
+            text_color = ".99"
+        elif style == "lavender":
+            color = "#D8C9FF"
+            hovercolor = "#F3D5FB"
+            text_color = "#552c5c"
+            AxesWidget.round_borders(self)
+            AxesWidget.remove_border(self)
+        elif style == "tangerine":
+            color = "#FEB07C"
+            hovercolor = "#F9CE90"
+            text_color = "#8B4000"
+        elif style == "pastel-green":
+            color = "#AEDCAE"
+            hovercolor = "#CDEBC5"
+            text_color = "#023020"
+        elif style == "":
+            # Do nothing
+            pass
+        else:
+            raise ValueError('Invalid Style Name')
 
         if image is not None:
             ax.imshow(image)
         self.label = ax.text(0.5, 0.5, label,
                              verticalalignment='center',
                              horizontalalignment='center',
+                             color=text_color,
                              transform=ax.transAxes)
 
         self._observers = cbook.CallbackRegistry(signals=["clicked"])
@@ -186,6 +251,7 @@ class Button(AxesWidget):
         ax.set_facecolor(color)
         ax.set_xticks([])
         ax.set_yticks([])
+        self.ax = ax
         self.color = color
         self.hovercolor = hovercolor
 
@@ -222,6 +288,7 @@ class Button(AxesWidget):
     def disconnect(self, cid):
         """Remove the callback function with connection id *cid*."""
         self._observers.disconnect(cid)
+
 
 
 class SliderBase(AxesWidget):
