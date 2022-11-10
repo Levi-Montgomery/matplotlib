@@ -1054,6 +1054,25 @@ def test_round_corners(ax):
 
     plt.show()
 
+@pytest.mark.backend('Qt5Agg')
+def test_border(ax):
+    fig, ax = plt.subplots()
+    fig.subplots_adjust(bottom=0.2)
+
+    # Round Button test
+    ax1 = fig.add_axes([0.4, 0.8, 0.1, 0.075])
+    b1 = widgets.Button(ax1, 'Button', color='lightgray')
+    b1.remove_border()
+    b1.on_clicked(lambda event: print('Clicked'))
+
+    # Round Button test
+    ax2 = fig.add_axes([0.4, 0.6, 0.1, 0.075])
+    b2 = widgets.Button(ax2, 'Button', color='lightgray')
+    b2.border_color('green')
+    b2.on_clicked(lambda event: print('Clicked'))
+
+    plt.show()
+
 @pytest.mark.parametrize("toolbar", ["none", "toolbar2", "toolmanager"])
 def test_TextBox(ax, toolbar):
     # Avoid "toolmanager is provisional" warning.
