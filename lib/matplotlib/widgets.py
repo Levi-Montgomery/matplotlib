@@ -234,19 +234,19 @@ class Button(AxesWidget):
             ax.imshow(image)
         if text_style=="":
             self.label = ax.text(0.5, 0.5, label,
-                             verticalalignment='center',
-                             horizontalalignment='center',
-                             color=text_color,
-                             transform=ax.transAxes,
-                             fontfamily=text_font)
+                                 verticalalignment='center',
+                                 horizontalalignment='center',
+                                 color=text_color,
+                                 transform=ax.transAxes,
+                                 fontfamily=text_font)
         else:
             self.label = ax.text(0.5, 0.5, label,
-                             verticalalignment='center',
-                             horizontalalignment='center',
-                             color=text_color,
-                             transform=ax.transAxes,
-                             fontfamily=text_font,
-                             fontstyle=text_style)
+                                 verticalalignment='center',
+                                 horizontalalignment='center',
+                                 color=text_color,
+                                 transform=ax.transAxes,
+                                 fontfamily=text_font,
+                                 fontstyle=text_style)
 
         self._observers = cbook.CallbackRegistry(signals=["clicked"])
 
