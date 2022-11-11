@@ -963,72 +963,6 @@ def test_CheckButtons(ax):
 
 
 @pytest.mark.backend('Qt5Agg')
-def test_Buttons(ax):
-    freqs = np.arange(2, 20, 3)
-
-    fig, ax = plt.subplots()
-    fig.subplots_adjust(bottom=0.2)
-    t = np.arange(0.0, 1.0, 0.001)
-    s = np.sin(2 * np.pi * freqs[0] * t)
-    l, = ax.plot(t, s, lw=2)
-
-    class Index:
-        ind = 0
-
-        def next(self, event):
-            self.ind += 1
-            i = self.ind % len(freqs)
-            ydata = np.sin(2 * np.pi * freqs[i] * t)
-            l.set_ydata(ydata)
-            plt.draw()
-
-        def prev(self, event):
-            self.ind -= 1
-            i = self.ind % len(freqs)
-            ydata = np.sin(2 * np.pi * freqs[i] * t)
-            l.set_ydata(ydata)
-            plt.draw()
-
-    callback = Index()
-    axprev = fig.add_axes([0.7, 0.05, 0.1, 0.075])
-    axnext = fig.add_axes([0.81, 0.05, 0.1, 0.075])
-    bnext = widgets.Button(axnext,
-                           label='Next',
-                           style="lavender")
-    bnext.on_clicked(callback.next)
-    bprev = widgets.Button(axprev, 'Previous', style="")
-    bprev.on_clicked(callback.prev)
-
-    plt.show()
-
-@pytest.mark.backend('Qt5Agg')
-def test_round_corners(ax):
-    fig, ax = plt.subplots()
-    fig.subplots_adjust(bottom=0.2)
-
-    # Round Button test
-    ax1 = fig.add_axes([0.4, 0.8, 0.1, 0.075])
-    b1 = widgets.Button(ax1, 'Button', color='blue')
-    b1.round_borders()
-    b1.remove_border()
-    b1.on_clicked(lambda event: print('Clicked'))
-
-    # Round Button test
-    ax2 = fig.add_axes([0.4, 0.6, 0.1, 0.075])
-    b2 = widgets.Button(ax2, 'Button', color='blue')
-    b2.round_borders(radius=0.4)
-    b2.remove_border()
-    b2.on_clicked(lambda event: print('Clicked'))
-
-    # Text Box test
-    ax3 = fig.add_axes([0.4, 0.4, 0.1, 0.075])
-    t1 = widgets.TextBox(ax3, 'Type:', color='lightgray')
-    t1.round_borders(radius=0.10)
-    t1.remove_border()
-
-    plt.show()
-
-@pytest.mark.backend('Qt5Agg')
 def test_round_corners(ax):
     fig, ax = plt.subplots()
     fig.subplots_adjust(bottom=0.2)
@@ -1667,7 +1601,7 @@ def test_MultiCursor(horizOn, vertOn):
         assert l.get_ydata() == (.25, .25)
 
 @pytest.mark.backend('Qt5Agg')
-def test_button():
+def test_Buttons():
         freqs = np.arange(2, 20, 3)
 
         fig, ax = plt.subplots()
