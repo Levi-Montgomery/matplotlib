@@ -187,7 +187,7 @@ class Button(AxesWidget):
     """
 
     def __init__(self, ax, label, image=None,
-                 color='0.85', hovercolor='0.95', text_color=".10", style=""):
+                 color='0.85', hovercolor='0.95', text_color=".10", text_font="DejaVu Sans", text_style="", style=""):
         """
         Parameters
         ----------
@@ -204,6 +204,10 @@ class Button(AxesWidget):
             The color of the button when the mouse is over it.
         text_color : color
             The color of the text label inside the button.
+        text_font : fontFamily
+            The font of the text label inside the button.
+        text_style : fontstyle
+            The font style of the text label inside the button.
         style : str
             A pre-defined style. Style names:
             "pastel-blue", "lavender", "tangerine", "pastel-green"
@@ -213,20 +217,24 @@ class Button(AxesWidget):
             color = "#96B9D0"
             hovercolor = "#BFD4DB"
             text_color = ".99"
+            text_style = "italic"
         elif style == "lavender":
             color = "#D8C9FF"
             hovercolor = "#F3D5FB"
             text_color = "#552c5c"
+            text_font = "fantasy"
             AxesWidget.round_borders(self)
             AxesWidget.remove_border(self)
         elif style == "tangerine":
             color = "#FEB07C"
             hovercolor = "#F9CE90"
             text_color = "#8B4000"
+            text_font = "Comic Sans MS"
         elif style == "pastel-green":
             color = "#AEDCAE"
             hovercolor = "#CDEBC5"
             text_color = "#023020"
+            text_font = "Helvetica"
         elif style == "":
             # Do nothing
             pass
@@ -235,11 +243,21 @@ class Button(AxesWidget):
 
         if image is not None:
             ax.imshow(image)
-        self.label = ax.text(0.5, 0.5, label,
-                             verticalalignment='center',
-                             horizontalalignment='center',
-                             color=text_color,
-                             transform=ax.transAxes)
+        if text_style=="":
+            self.label = ax.text(0.5, 0.5, label,
+                                 verticalalignment='center',
+                                 horizontalalignment='center',
+                                 color=text_color,
+                                 transform=ax.transAxes,
+                                 fontfamily=text_font)
+        else:
+            self.label = ax.text(0.5, 0.5, label,
+                                 verticalalignment='center',
+                                 horizontalalignment='center',
+                                 color=text_color,
+                                 transform=ax.transAxes,
+                                 fontfamily=text_font,
+                                 fontstyle=text_style)
 
         self._observers = cbook.CallbackRegistry(signals=["clicked"])
 
@@ -288,7 +306,6 @@ class Button(AxesWidget):
     def disconnect(self, cid):
         """Remove the callback function with connection id *cid*."""
         self._observers.disconnect(cid)
-
 
 
 class SliderBase(AxesWidget):
