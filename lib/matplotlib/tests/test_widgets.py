@@ -1696,9 +1696,9 @@ def test_button():
         callback = Index()
         axprev = fig.add_axes([0.7, 0.05, 0.1, 0.075])
         axnext = fig.add_axes([0.81, 0.05, 0.1, 0.075])
-        bnext = widgets.Button(axnext, label='Next', color="0.85", text_color="#ff0000")
+        bnext = widgets.Button(axnext, label='Next', style="pastel-blue")
         bnext.on_clicked(callback.next)
-        bprev = widgets.Button(axprev, 'Previous')
+        bprev = widgets.Button(axprev, 'Previous', style="tangerine")
         bprev.on_clicked(callback.prev)
 
         plt.show()
