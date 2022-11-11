@@ -1074,6 +1074,29 @@ def test_border(ax):
 
     plt.show()
 
+@pytest.mark.backend('Qt5Agg')
+def test_style(ax):
+    fig, ax = plt.subplots()
+    fig.subplots_adjust(bottom=0.2)
+
+    # add normal button
+    ax1 = fig.add_axes([0.4, 0.8, 0.1, 0.075])
+    b1 = widgets.Button(ax1, 'Normal')
+
+    # add Italic text button
+    ax2 = fig.add_axes([0.4, 0.6, 0.1, 0.075])
+    b2 = widgets.Button(ax2, "Iatlic", text_style="italic")
+
+    # add Comic Sans MS text button
+    ax3 = fig.add_axes([0.4, 0.4, 0.2, 0.075])
+    b3 = widgets.Button(ax3, "Comic Sans MS", text_font="Comic Sans MS")
+
+    # add combination (Comic Sans MS text and Italic) button
+    ax4 = fig.add_axes([0.4, 0.2, 0.15, 0.075])
+    b4 = widgets.Button(ax4, "Combination", text_style="italic", text_font="Comic Sans MS")
+
+    plt.show()
+
 @pytest.mark.parametrize("toolbar", ["none", "toolbar2", "toolmanager"])
 def test_TextBox(ax, toolbar):
     # Avoid "toolmanager is provisional" warning.
