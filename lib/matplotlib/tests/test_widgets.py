@@ -1667,7 +1667,7 @@ def test_MultiCursor(horizOn, vertOn):
         assert l.get_ydata() == (.25, .25)
 
 @pytest.mark.backend('Qt5Agg')
-def test_button():
+def test_Buttons():
         freqs = np.arange(2, 20, 3)
 
         fig, ax = plt.subplots()
