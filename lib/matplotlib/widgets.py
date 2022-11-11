@@ -115,6 +115,7 @@ class AxesWidget(Widget):
         self.ax = ax
         self.canvas = ax.figure.canvas
         self._cids = []
+        self.radius = 0
 
     def connect_event(self, event, callback):
         """
@@ -130,17 +131,6 @@ class AxesWidget(Widget):
         """Disconnect all events created by this widget."""
         for c in self._cids:
             self.canvas.mpl_disconnect(c)
-    
-    def round_borders(self, radius=0.25, padding=0.01):
-        ax = self.ax
-        color = ax.get_facecolor()
-        self.color = 'w'
-        ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
-        ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
-        ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle(( 1 - (radius + padding), 1 - (radius + padding)), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle((1 - (radius + padding), radius + padding), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle((radius + padding, 1 - (radius + padding)), radius, color=color))
 
     def remove_border(self):
         ax = self.ax
@@ -151,30 +141,31 @@ class AxesWidget(Widget):
 
     def border_color(self, color):
         ax = self.ax
-        ax = self.ax
         ax.spines['top'].set_edgecolor(color)
         ax.spines['right'].set_edgecolor(color)
         ax.spines['bottom'].set_edgecolor(color)
         ax.spines['left'].set_edgecolor(color)
 
-
     def round_borders(self, radius=0.25, padding=0.01):
-        ax = self.ax
-        color = ax.get_facecolor()
-        self.color = 'w'
-        ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
-        ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
-        ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle(( 1 - (radius + padding), 1 - (radius + padding)), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle((1 - (radius + padding), radius + padding), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle((radius + padding, 1 - (radius + padding)), radius, color=color))
+        self.radius = radius
+        self.redraw_ax()
 
-    def remove_border(self):
+    def redraw_ax(self):
         ax = self.ax
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.spines['bottom'].set_visible(False)
-        ax.spines['left'].set_visible(False)
+        color = self.ax.get_facecolor()
+        ax.set_facecolor('#00000000')
+        if self.radius > 0:
+            radius = self.radius
+            padding = 0.01
+            ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
+            ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
+            ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
+            ax.add_patch(mpl.pyplot.Circle(( 1 - (radius + padding), 1 - (radius + padding)), radius, color=color))
+            ax.add_patch(mpl.pyplot.Circle((1 - (radius + padding), radius + padding), radius, color=color))
+            ax.add_patch(mpl.pyplot.Circle((radius + padding, 1 - (radius + padding)), radius, color=color))
+        else:
+            ax.add_patch(mpl.pyplot.Rectangle((0, 0), 1, 1, linewidth=0, edgecolor='w', facecolor=color))
+
 
 class Button(AxesWidget):
     """
@@ -283,6 +274,7 @@ class Button(AxesWidget):
         if not colors.same_color(c, self.ax.get_facecolor()):
             self.ax.set_facecolor(c)
             if self.drawon:
+                self.redraw_ax()
                 self.ax.figure.canvas.draw()
 
     def on_clicked(self, func):
