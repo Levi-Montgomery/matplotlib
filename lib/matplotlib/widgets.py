@@ -156,25 +156,6 @@ class AxesWidget(Widget):
         ax.spines['bottom'].set_edgecolor(color)
         ax.spines['left'].set_edgecolor(color)
 
-
-    def round_borders(self, radius=0.25, padding=0.01):
-        ax = self.ax
-        color = ax.get_facecolor()
-        self.color = 'w'
-        ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
-        ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
-        ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle(( 1 - (radius + padding), 1 - (radius + padding)), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle((1 - (radius + padding), radius + padding), radius, color=color))
-        ax.add_patch(mpl.pyplot.Circle((radius + padding, 1 - (radius + padding)), radius, color=color))
-
-    def remove_border(self):
-        ax = self.ax
-        ax.spines['top'].set_visible(False)
-        ax.spines['right'].set_visible(False)
-        ax.spines['bottom'].set_visible(False)
-        ax.spines['left'].set_visible(False)
-
 class Button(AxesWidget):
     """
     A GUI neutral button.
@@ -225,20 +206,24 @@ class Button(AxesWidget):
             color = "#96B9D0"
             hovercolor = "#BFD4DB"
             text_color = ".99"
+            text_style = "italic"
         elif style == "lavender":
             color = "#D8C9FF"
             hovercolor = "#F3D5FB"
             text_color = "#552c5c"
+            text_font = "fantasy"
             AxesWidget.round_borders(self)
             AxesWidget.remove_border(self)
         elif style == "tangerine":
             color = "#FEB07C"
             hovercolor = "#F9CE90"
             text_color = "#8B4000"
+            text_font = "Comic Sans MS"
         elif style == "pastel-green":
             color = "#AEDCAE"
             hovercolor = "#CDEBC5"
             text_color = "#023020"
+            text_font = "Helvetica"
         elif style == "":
             # Do nothing
             pass
