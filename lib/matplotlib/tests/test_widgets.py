@@ -1042,7 +1042,7 @@ def test_round_corners(ax):
 
     # Round Button test
     ax2 = fig.add_axes([0.4, 0.6, 0.1, 0.075])
-    b2 = widgets.Button(ax2, 'Button', color='blue')
+    b2 = widgets.Button(ax2, 'Button', color='blue', hovercolor='red')
     b2.round_borders(radius=0.4)
     b2.remove_border()
     b2.on_clicked(lambda event: print('Clicked'))
