@@ -134,7 +134,7 @@ class AxesWidget(Widget):
     def round_borders(self, radius=0.25, padding=0.01):
         ax = self.ax
         color = ax.get_facecolor()
-        self.color = 'w'
+        self.color = '#00000000'
         ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
         ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
         ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
@@ -150,6 +150,14 @@ class AxesWidget(Widget):
         ax.spines['left'].set_visible(False)
 
     def border_color(self, color):
+        ax = self.ax
+        ax.spines['top'].set_edgecolor(color)
+        ax.spines['right'].set_edgecolor(color)
+        ax.spines['bottom'].set_edgecolor(color)
+        ax.spines['left'].set_edgecolor(color)
+
+    def border_color(self, color):
+        ax = self.ax
         ax = self.ax
         ax.spines['top'].set_edgecolor(color)
         ax.spines['right'].set_edgecolor(color)
