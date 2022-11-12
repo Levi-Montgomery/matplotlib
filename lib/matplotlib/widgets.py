@@ -152,6 +152,10 @@ class AxesWidget(Widget):
 
     def redraw_ax(self):
         ax = self.ax
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
         color = self.ax.get_facecolor()
         ax.set_facecolor('#00000000')
         if self.radius > 0:
@@ -223,8 +227,6 @@ class Button(AxesWidget):
             hovercolor = "#F3D5FB"
             text_color = "#552c5c"
             text_font = "fantasy"
-            AxesWidget.round_borders(self)
-            AxesWidget.remove_border(self)
         elif style == "tangerine":
             color = "#FEB07C"
             hovercolor = "#F9CE90"
