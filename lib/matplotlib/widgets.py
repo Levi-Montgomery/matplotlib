@@ -115,6 +115,7 @@ class AxesWidget(Widget):
         self.ax = ax
         self.canvas = ax.figure.canvas
         self._cids = []
+        self.radius = 0
 
     def connect_event(self, event, callback):
         """
@@ -130,6 +131,44 @@ class AxesWidget(Widget):
         """Disconnect all events created by this widget."""
         for c in self._cids:
             self.canvas.mpl_disconnect(c)
+
+    def remove_border(self):
+        ax = self.ax
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+
+    def border_color(self, color):
+        ax = self.ax
+        ax.spines['top'].set_edgecolor(color)
+        ax.spines['right'].set_edgecolor(color)
+        ax.spines['bottom'].set_edgecolor(color)
+        ax.spines['left'].set_edgecolor(color)
+
+    def round_borders(self, radius=0.25, padding=0.01):
+        self.radius = radius
+        self.redraw_ax()
+
+    def redraw_ax(self):
+        ax = self.ax
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        color = self.ax.get_facecolor()
+        ax.set_facecolor('#00000000')
+        if self.radius > 0:
+            radius = self.radius
+            padding = 0.01
+            ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
+            ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
+            ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
+            ax.add_patch(mpl.pyplot.Circle(( 1 - (radius + padding), 1 - (radius + padding)), radius, color=color))
+            ax.add_patch(mpl.pyplot.Circle((1 - (radius + padding), radius + padding), radius, color=color))
+            ax.add_patch(mpl.pyplot.Circle((radius + padding, 1 - (radius + padding)), radius, color=color))
+        else:
+            ax.add_patch(mpl.pyplot.Rectangle((0, 0), 1, 1, linewidth=0, edgecolor='w', facecolor=color))
 
 
 class Button(AxesWidget):
@@ -152,7 +191,7 @@ class Button(AxesWidget):
     """
 
     def __init__(self, ax, label, image=None,
-                 color='0.85', hovercolor='0.95'):
+                 color='0.85', hovercolor='0.95', text_color=".10", text_font="DejaVu Sans", text_style="", style=""):
         """
         Parameters
         ----------
@@ -167,15 +206,85 @@ class Button(AxesWidget):
             The color of the button when not activated.
         hovercolor : color
             The color of the button when the mouse is over it.
+        text_color : color
+            The color of the text label inside the button.
+        text_font : fontFamily
+            The font of the text label inside the button.
+        text_style : fontstyle
+            The font style of the text label inside the button.
+        style : str
+            A pre-defined style. Style names:
+            "pastel-blue", "lavender", "tangerine", "pastel-green", "dark-grayscale", "light-grayscale", "underwater", "sky", "inferno"
         """
         super().__init__(ax)
+        if style == "pastel-blue":
+            color = "#96B9D0"
+            hovercolor = "#BFD4DB"
+            text_color = ".99"
+            text_style = "italic"
+        elif style == "lavender":
+            color = "#D8C9FF"
+            hovercolor = "#F3D5FB"
+            text_color = "#552c5c"
+            text_font = "fantasy"
+        elif style == "tangerine":
+            color = "#FEB07C"
+            hovercolor = "#F9CE90"
+            text_color = "#8B4000"
+            text_font = "Comic Sans MS"
+        elif style == "pastel-green":
+            color = "#AEDCAE"
+            hovercolor = "#CDEBC5"
+            text_color = "#023020"
+            text_font = "Helvetica"
+        elif style == "dark-grayscale":
+            color = "#525252"
+            hovercolor = "#323232"
+            text_color = "#EEEEEE"
+            text_font = "Impact"
+        elif style == "light-grayscale":
+            color = "#BDBDBD"
+            hovercolor = "#DEDEDE"
+            text_color = "#505050"
+            text_font = "Impact"
+        elif style == "underwater":
+            color = "#01088E"
+            hovercolor = "#00055B"
+            text_color = "#059DFF"
+            text_font = "Comic Sans MS"
+        elif style == "sky":
+            color = "#47B7FF"
+            hovercolor = "#1995E5"
+            text_color = "#FFFFFF"
+            text_font = "Comic Sans MS"
+        elif style == "inferno":
+            color = "#FF4900"
+            hovercolor = "#C23800"
+            text_color = "#FF0000"
+            text_font = "Impact"
+        elif style == "":
+            # Do nothing
+            pass
+        else:
+            raise ValueError('Invalid Style Name')
 
         if image is not None:
             ax.imshow(image)
-        self.label = ax.text(0.5, 0.5, label,
-                             verticalalignment='center',
-                             horizontalalignment='center',
-                             transform=ax.transAxes)
+        if text_style=="":
+            self.label = ax.text(0.5, 0.5, label,
+                                 verticalalignment='center',
+                                 horizontalalignment='center',
+                                 color=text_color,
+                                 transform=ax.transAxes,
+                                 fontfamily=text_font)
+        else:
+            self.label = ax.text(0.5, 0.5, label,
+                                 verticalalignment='center',
+                                 horizontalalignment='center',
+                                 color=text_color,
+                                 transform=ax.transAxes,
+                                 fontfamily=text_font,
+                                 fontstyle=text_style)
 
         self._observers = cbook.CallbackRegistry(signals=["clicked"])
 
@@ -186,6 +295,7 @@ class Button(AxesWidget):
         ax.set_facecolor(color)
         ax.set_xticks([])
         ax.set_yticks([])
+        self.ax = ax
         self.color = color
         self.hovercolor = hovercolor
 
@@ -209,6 +319,7 @@ class Button(AxesWidget):
         if not colors.same_color(c, self.ax.get_facecolor()):
             self.ax.set_facecolor(c)
             if self.drawon:
+                self.redraw_ax()
                 self.ax.figure.canvas.draw()
 
     def on_clicked(self, func):
