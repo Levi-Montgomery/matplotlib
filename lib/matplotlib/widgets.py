@@ -1154,8 +1154,8 @@ class CheckButtons(AxesWidget):
             p = Rectangle(xy=(x, y), width=w, height=h, edgecolor='black',
                           facecolor=axcolor, transform=ax.transAxes)
 
-            l1 = Line2D([x, x + w], [y + h, y], **lineparams)
-            l2 = Line2D([x, x + w], [y, y + h], **lineparams)
+            l1 = Line2D([x + w / 7, x + w * 4 / 10], [y + h / 2, y + h / 5], **lineparams)
+            l2 = Line2D([x + w * 3 / 10, x + w * 4 / 5], [y + h / 5, y + h * 4 / 5], **lineparams)
 
             l1.set_visible(active)
             l2.set_visible(active)
