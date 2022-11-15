@@ -977,7 +977,6 @@ def test_CheckButton_custom():
     plt.axis([-2.5, 12, 0, 40])
     plt.subplots_adjust(left=0.25, bottom=0.1, right=0.95, top=0.95)
 
-
     # checkbuton widget
     labels = ['red', 'blue', 'green']
     activated = [True, False, False]

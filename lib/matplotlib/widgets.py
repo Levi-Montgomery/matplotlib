@@ -1176,7 +1176,7 @@ class CheckButtons(AxesWidget):
         for i, (p, t) in enumerate(zip(self.rectangles, self.labels)):
             if (t.get_window_extent().contains(event.x, event.y) or
                     p.get_window_extent().contains(event.x, event.y)):
-                if self.actives[i]:
+                if self.autoChange and self.actives[i]:
                     return
                 self.set_active(i)
                 if self.autoChange:
