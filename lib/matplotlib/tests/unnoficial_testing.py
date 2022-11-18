@@ -87,32 +87,45 @@ round_borders(ax9)
 # Round Button test
 ax10 = fig.add_axes([0.4, 0.8, 0.1, 0.075])
 remove_border(ax10)
-b10 = widgets.Button(ax10, 'Button', color='blue')
+b10 = widgets.Button(ax10, 'Button', color='blue', text_color='w', hovercolor='darkblue')
 b10.round_borders()
 b10.on_clicked(lambda event: print('Clicked'))
 
-# Round Button test
-ax11 = fig.add_axes([0.4, 0.6, 0.1, 0.075])
-remove_border(ax11)
-b11 = widgets.Button(ax11, 'Button', color='blue')
-b11.round_borders(radius=0.4)
-b11.on_clicked(lambda event: print('Clicked'))
-
 # Text Box test
 ax12 = fig.add_axes([0.4, 0.4, 0.1, 0.075])
-remove_border(ax12)
 t1 = widgets.TextBox(ax12, 'Type:', color='lightgray')
+t1.remove_border()
 t1.round_borders(radius=0.10)
 
 # Slider test
-axs = fig.add_axes([0.1, 0.1, 0.5, 0.04])
+# axs = fig.add_axes([0.1, 0.1, 0.04, 0.4])
+# print(axs.bbox.height / axs.bbox.width)
+# amp_slider = widgets.Slider(
+#     ax=axs,
+#     label="Test",
+#     valmin=0,
+#     valmax=10,
+#     orientation="vertical",
+#     track_color='gray',
+#     color='limegreen',
+#     round_edges=True,
+#     text_color='green',
+#     text_font='Comic Sans MS'
+# )
+
+axs2 = fig.add_axes([0.2, 0.1, 0.4, 0.04])
 amp_slider = widgets.Slider(
-    ax=axs,
+    ax=axs2,
     label="Test",
     valmin=0,
     valmax=10,
     orientation="horizontal",
-    track_color='red'
+    track_color='lightgray',
+    color='blue',
+    initcolor='blue',
+    round_edges=True,
+    text_color='red',
+    text_font='Comic Sans MS'
 )
 
 plt.show()
