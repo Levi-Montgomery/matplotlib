@@ -157,7 +157,9 @@ class AxesWidget(Widget):
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         color = self.ax.get_facecolor()
-        ax.set_facecolor('#00000000')
+        # Creates a rectangle the size of the button and sets its color to the background color
+        ax.add_patch(
+            mpl.pyplot.Rectangle((0, 0), 1, 1, linewidth=0, edgecolor="w", facecolor=ax.figure.get_facecolor()))
         if self.radius > 0:
             radius = self.radius
             padding = 0.01
