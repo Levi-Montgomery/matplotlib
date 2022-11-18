@@ -152,8 +152,14 @@ class AxesWidget(Widget):
 
     def redraw_ax(self):
         ax = self.ax
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
         color = self.ax.get_facecolor()
-        ax.set_facecolor('#00000000')
+        # Creates a rectangle the size of the button and sets its color to the background color
+        ax.add_patch(
+            mpl.pyplot.Rectangle((0, 0), 1, 1, linewidth=0, edgecolor="w", facecolor=ax.figure.get_facecolor()))
         if self.radius > 0:
             radius = self.radius
             padding = 0.01
@@ -210,7 +216,7 @@ class Button(AxesWidget):
             The font style of the text label inside the button.
         style : str
             A pre-defined style. Style names:
-            "pastel-blue", "lavender", "tangerine", "pastel-green"
+            "pastel-blue", "lavender", "tangerine", "pastel-green", "dark-grayscale", "light-grayscale", "underwater", "sky", "inferno"
         """
         super().__init__(ax)
         if style == "pastel-blue":
@@ -223,8 +229,6 @@ class Button(AxesWidget):
             hovercolor = "#F3D5FB"
             text_color = "#552c5c"
             text_font = "fantasy"
-            AxesWidget.round_borders(self)
-            AxesWidget.remove_border(self)
         elif style == "tangerine":
             color = "#FEB07C"
             hovercolor = "#F9CE90"
@@ -235,6 +239,31 @@ class Button(AxesWidget):
             hovercolor = "#CDEBC5"
             text_color = "#023020"
             text_font = "Helvetica"
+        elif style == "dark-grayscale":
+            color = "#525252"
+            hovercolor = "#323232"
+            text_color = "#EEEEEE"
+            text_font = "Impact"
+        elif style == "light-grayscale":
+            color = "#BDBDBD"
+            hovercolor = "#DEDEDE"
+            text_color = "#505050"
+            text_font = "Impact"
+        elif style == "underwater":
+            color = "#01088E"
+            hovercolor = "#00055B"
+            text_color = "#059DFF"
+            text_font = "Comic Sans MS"
+        elif style == "sky":
+            color = "#47B7FF"
+            hovercolor = "#1995E5"
+            text_color = "#FFFFFF"
+            text_font = "Comic Sans MS"
+        elif style == "inferno":
+            color = "#FF4900"
+            hovercolor = "#C23800"
+            text_color = "#FF0000"
+            text_font = "Impact"
         elif style == "":
             # Do nothing
             pass

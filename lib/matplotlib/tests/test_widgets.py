@@ -971,21 +971,18 @@ def test_round_corners(ax):
     ax1 = fig.add_axes([0.4, 0.8, 0.1, 0.075])
     b1 = widgets.Button(ax1, 'Button', color='blue')
     b1.round_borders()
-    b1.remove_border()
     b1.on_clicked(lambda event: print('Clicked'))
 
     # Round Button test
     ax2 = fig.add_axes([0.4, 0.6, 0.1, 0.075])
-    b2 = widgets.Button(ax2, 'Button', color='blue', hovercolor='red')
+    b2 = widgets.Button(ax2, 'Button', style="lavender")
     b2.round_borders(radius=0.4)
-    b2.remove_border()
     b2.on_clicked(lambda event: print('Clicked'))
 
     # Text Box test
     ax3 = fig.add_axes([0.4, 0.4, 0.1, 0.075])
     t1 = widgets.TextBox(ax3, 'Type:', color='lightgray')
     t1.round_borders(radius=0.10)
-    t1.remove_border()
 
     plt.show()
 
@@ -993,12 +990,17 @@ def test_round_corners(ax):
 def test_border(ax):
     fig, ax = plt.subplots()
     fig.subplots_adjust(bottom=0.2)
+    b1Clicked = False
 
+    def clicked_button(arg):
+        arg = True
     # Round Button test
+
     ax1 = fig.add_axes([0.4, 0.8, 0.1, 0.075])
     b1 = widgets.Button(ax1, 'Button', color='lightgray')
     b1.remove_border()
     b1.on_clicked(lambda event: print('Clicked'))
+
 
     # Round Button test
     ax2 = fig.add_axes([0.4, 0.6, 0.1, 0.075])
@@ -1009,7 +1011,7 @@ def test_border(ax):
     plt.show()
 
 @pytest.mark.backend('Qt5Agg')
-def test_style(ax):
+def test_fonts(ax):
     fig, ax = plt.subplots()
     fig.subplots_adjust(bottom=0.2)
 
