@@ -161,14 +161,14 @@ class AxesWidget(Widget):
         if self.radius > 0:
             radius = self.radius
             padding = 0.01
-            ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, edgecolor='w', facecolor=color))
-            ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, edgecolor='w', facecolor=color))
+            ax.add_patch(mpl.pyplot.Rectangle((0, radius), 1, 1 - 2 * radius, linewidth=0, facecolor=color))
+            ax.add_patch(mpl.pyplot.Rectangle((radius, 0), 1 - 2 * radius, 1, linewidth=0, facecolor=color))
             ax.add_patch(mpl.pyplot.Circle((radius + padding, radius + padding), radius, color=color))
             ax.add_patch(mpl.pyplot.Circle(( 1 - (radius + padding), 1 - (radius + padding)), radius, color=color))
             ax.add_patch(mpl.pyplot.Circle((1 - (radius + padding), radius + padding), radius, color=color))
             ax.add_patch(mpl.pyplot.Circle((radius + padding, 1 - (radius + padding)), radius, color=color))
         else:
-            ax.add_patch(mpl.pyplot.Rectangle((0, 0), 1, 1, linewidth=0, edgecolor='w', facecolor=color))
+            ax.add_patch(mpl.pyplot.Rectangle((0, 0), 1, 1, linewidth=0, facecolor=color))
 
 
 class Button(AxesWidget):
@@ -431,7 +431,7 @@ class Slider(SliderBase):
                  closedmin=True, closedmax=True, slidermin=None,
                  slidermax=None, dragging=True, valstep=None,
                  orientation='horizontal', *, initcolor='r',
-                 track_color='lightgrey', handle_style=None, **kwargs):
+                 track_color='lightgrey', handle_style=None, radius=0, **kwargs):
         """
         Parameters
         ----------
@@ -532,26 +532,73 @@ class Slider(SliderBase):
         }
 
         if orientation == 'vertical':
-            self.track = Rectangle(
-                (.25, 0), .5, 1,
-                transform=ax.transAxes,
-                facecolor=track_color
-            )
-            ax.add_patch(self.track)
-            self.poly = ax.axhspan(valmin, valinit, .25, .75, **kwargs)
+            if radius > 0:
+                radius = 0
+                ratio = ax.bbox.width / ax.bbox.height
+                self.track = Rectangle(
+                    (.25, .5 * ratio * 0.5), .5, 1 - (.5 * ratio),
+                    transform=ax.transAxes,
+                    facecolor=track_color
+                )
+                ax.add_patch(self.track)
+
+                
+                ax.add_patch(Ellipse(
+                    (.5, 1 - (.5 * ratio * 0.5)), .5, .5 * ratio,
+                    transform=ax.transAxes,
+                    facecolor=track_color
+                ))
+
+                ax.add_patch(Ellipse(
+                    (.5, .5 * ratio * 0.5), .5, .5 * ratio,
+                    transform=ax.transAxes,
+                    facecolor=kwargs['color']
+                ))
+                self.poly = ax.axhspan(valmin + (3 * ratio), valinit, .25, .75, **kwargs)
+            else:
+                self.track = Rectangle(
+                    (.25, 0), .5, 1,
+                    transform=ax.transAxes,
+                    facecolor=track_color
+                )
+                ax.add_patch(self.track)
+                self.poly = ax.axhspan(valmin, valinit, .25, .75, **kwargs)
             # Drawing a longer line and clipping it to the track avoids
             # pixelation-related asymmetries.
             self.hline = ax.axhline(valinit, 0, 1, color=initcolor, lw=1,
                                     clip_path=TransformedPatchPath(self.track))
             handleXY = [[0.5], [valinit]]
         else:
-            self.track = Rectangle(
-                (0, .25), 1, .5,
-                transform=ax.transAxes,
-                facecolor=track_color
-            )
-            ax.add_patch(self.track)
-            self.poly = ax.axvspan(valmin, valinit, .25, .75, **kwargs)
+            if radius > 0:
+                ratio = ax.bbox.height / ax.bbox.width
+                self.track = Rectangle(
+                    (.5 * ratio * 0.5, .25), 1 - (.5 * ratio), .5,
+                    transform=ax.transAxes,
+                    facecolor=track_color
+                )
+                ax.add_patch(self.track)
+
+                
+                ax.add_patch(Ellipse(
+                    (1 - (.5 * ratio * 0.5),.5), .5 * ratio, .5,
+                    transform=ax.transAxes,
+                    facecolor=track_color
+                ))
+
+                ax.add_patch(Ellipse(
+                    (.5 * ratio * 0.5,.5), .5 * ratio, .5,
+                    transform=ax.transAxes,
+                    facecolor=kwargs['color']
+                ))
+                self.poly = ax.axvspan(valmin + (3 * ratio), valinit, .25, .75, **kwargs)
+            else:
+                self.track = Rectangle(
+                    (0, .25), 1, .5,
+                    transform=ax.transAxes,
+                    facecolor=track_color
+                )
+                ax.add_patch(self.track)
+                self.poly = ax.axvspan(valmin, valinit, .25, .75, **kwargs)
             self.vline = ax.axvline(valinit, 0, 1, color=initcolor, lw=1,
                                     clip_path=TransformedPatchPath(self.track))
             handleXY = [[valinit], [0.5]]
