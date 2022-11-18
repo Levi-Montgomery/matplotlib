@@ -431,7 +431,8 @@ class Slider(SliderBase):
                  closedmin=True, closedmax=True, slidermin=None,
                  slidermax=None, dragging=True, valstep=None,
                  orientation='horizontal', *, initcolor='r',
-                 track_color='lightgrey', handle_style=None, radius=0, **kwargs):
+                 track_color='lightgrey', handle_style=None, round_edges=False,
+                 text_color=".10", text_font="DejaVu Sans", text_style="normal", **kwargs):
         """
         Parameters
         ----------
@@ -532,7 +533,7 @@ class Slider(SliderBase):
         }
 
         if orientation == 'vertical':
-            if radius > 0:
+            if round_edges:
                 radius = 0
                 ratio = ax.bbox.width / ax.bbox.height
                 self.track = Rectangle(
@@ -569,26 +570,28 @@ class Slider(SliderBase):
                                     clip_path=TransformedPatchPath(self.track))
             handleXY = [[0.5], [valinit]]
         else:
-            if radius > 0:
+            if round_edges:
                 ratio = ax.bbox.height / ax.bbox.width
                 self.track = Rectangle(
                     (.5 * ratio * 0.5, .25), 1 - (.5 * ratio), .5,
                     transform=ax.transAxes,
-                    facecolor=track_color
+                    facecolor=track_color,
+                    linewidth=0
                 )
                 ax.add_patch(self.track)
 
-                
                 ax.add_patch(Ellipse(
                     (1 - (.5 * ratio * 0.5),.5), .5 * ratio, .5,
                     transform=ax.transAxes,
-                    facecolor=track_color
+                    facecolor=track_color,
+                    linewidth=0
                 ))
 
                 ax.add_patch(Ellipse(
                     (.5 * ratio * 0.5,.5), .5 * ratio, .5,
                     transform=ax.transAxes,
-                    facecolor=kwargs['color']
+                    facecolor=kwargs['color'],
+                    linewidth=0
                 ))
                 self.poly = ax.axvspan(valmin + (3 * ratio), valinit, .25, .75, **kwargs)
             else:
@@ -612,7 +615,10 @@ class Slider(SliderBase):
         if orientation == 'vertical':
             self.label = ax.text(0.5, 1.02, label, transform=ax.transAxes,
                                  verticalalignment='bottom',
-                                 horizontalalignment='center')
+                                 horizontalalignment='center',
+                                 color=text_color,
+                                 fontfamily=text_font,
+                                 fontstyle=text_style)
 
             self.valtext = ax.text(0.5, -0.02, self._format(valinit),
                                    transform=ax.transAxes,
@@ -621,7 +627,10 @@ class Slider(SliderBase):
         else:
             self.label = ax.text(-0.02, 0.5, label, transform=ax.transAxes,
                                  verticalalignment='center',
-                                 horizontalalignment='right')
+                                 horizontalalignment='right',
+                                 color=text_color,
+                                 fontfamily=text_font,
+                                 fontstyle=text_style)
 
             self.valtext = ax.text(1.02, 0.5, self._format(valinit),
                                    transform=ax.transAxes,
