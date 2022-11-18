@@ -984,6 +984,19 @@ def test_round_corners(ax):
     t1 = widgets.TextBox(ax3, 'Type:', color='lightgray')
     t1.round_borders(radius=0.10)
 
+    # Slider test
+    axs = fig.add_axes([0.2, 0.3, 0.4, 0.04])
+    slider = widgets.Slider(
+        ax=axs,
+        label="Test",
+        valmin=0,
+        valmax=10,
+        orientation="horizontal",
+        track_color='gray',
+        color='limegreen',
+        round_edges=True,
+    )
+
     plt.show()
 
 @pytest.mark.backend('Qt5Agg')
