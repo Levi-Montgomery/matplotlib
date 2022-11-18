@@ -1471,7 +1471,8 @@ class RadioButtons(AxesWidget):
         The label text of the currently selected button.
     """
 
-    def __init__(self, ax, labels, active=0, activecolor='blue'):
+    def __init__(self, ax, labels, active=0, activecolor='blue', text_color='black', border=True, inactive_color='',
+                 orientation='vertical'):
         """
         Add radio buttons to an `~.axes.Axes`.
 
@@ -1485,10 +1486,13 @@ class RadioButtons(AxesWidget):
             The index of the initially selected button.
         activecolor : color
             The color of the selected button.
+        text_color: color
+            The color of the text labels next to radio buttons.
         """
         super().__init__(ax)
         self.activecolor = activecolor
         self.value_selected = None
+        self.inactive_color = inactive_color
 
         ax.set_xticks([])
         ax.set_yticks([])
@@ -1502,21 +1506,50 @@ class RadioButtons(AxesWidget):
         circle_radius = dy / 2 - 0.01
         # default to hard-coded value if the radius becomes too large
         circle_radius = min(circle_radius, 0.05)
+        len_labels = 0
+        for i in range(0, len(labels)):
+            len_labels += len(labels[i])
+        dx = 1. / (len_labels + (circle_radius*len(labels) + 1))
+        xs = [1. / (len(labels) + 1)]
+        for i in range(0, len(labels)-1):
+            xs.append(1./(len(labels[i])) + xs[i])
+        #xs = np.linspace(1 - dx, dx, len(labels))
 
         self.labels = []
         self.circles = []
-        for y, label in zip(ys, labels):
-            t = ax.text(0.25, y, label, transform=ax.transAxes,
-                        horizontalalignment='left',
-                        verticalalignment='center')
+        for x, y, label in zip(xs, ys, labels):
+            if isinstance(text_color, str):
+                curr_color = text_color
+            elif len(text_color) > cnt:
+                curr_color = text_color[cnt]
+            else:
+                curr_color = 'black'
+            if orientation == "horizontal":
+                t = ax.text(x, 0.25, label, transform=ax.transAxes,
+                         horizontalalignment='left',
+                         verticalalignment='center',
+                         color=curr_color,
+                         )
+            else:
+                t = ax.text(0.25, y, label, transform=ax.transAxes,
+                         horizontalalignment='left',
+                         verticalalignment='center',
+                         color=curr_color,
+                         )
 
             if cnt == active:
                 self.value_selected = label
                 facecolor = activecolor
             else:
-                facecolor = axcolor
-
-            p = Circle(xy=(0.15, y), radius=circle_radius, edgecolor='black',
+                if inactive_color:
+                    facecolor = inactive_color
+                else:
+                    facecolor = axcolor
+            if orientation == "horizontal":
+                p = Circle(xy=(x - circle_radius, 0.25), radius=circle_radius, edgecolor='black',
+                       facecolor=facecolor, transform=ax.transAxes)
+            else:
+                p = Circle(xy=(0.15, y), radius=circle_radius, edgecolor='black',
                        facecolor=facecolor, transform=ax.transAxes)
 
             self.labels.append(t)
@@ -1527,6 +1560,11 @@ class RadioButtons(AxesWidget):
         self.connect_event('button_press_event', self._clicked)
 
         self._observers = cbook.CallbackRegistry(signals=["clicked"])
+
+        if not border:
+            self.remove_border()
+            ax.set_facecolor('#00000000')
+
 
     def _clicked(self, event):
         if self.ignore(event) or event.button != 1 or event.inaxes != self.ax:
@@ -1556,7 +1594,10 @@ class RadioButtons(AxesWidget):
             if i == index:
                 color = self.activecolor
             else:
-                color = self.ax.get_facecolor()
+                if self.inactive_color:
+                    color = self.inactive_color
+                else:
+                    color = self.ax.get_facecolor()
             p.set_facecolor(color)
 
         if self.drawon:

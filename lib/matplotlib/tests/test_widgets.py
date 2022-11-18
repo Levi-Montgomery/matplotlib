@@ -1631,8 +1631,32 @@ def test_Buttons():
         axprev = fig.add_axes([0.7, 0.05, 0.1, 0.075])
         axnext = fig.add_axes([0.81, 0.05, 0.1, 0.075])
         bnext = widgets.Button(axnext, label='Next', style="pastel-blue")
+        bnext.round_borders()
+        bnext.remove_border()
         bnext.on_clicked(callback.next)
         bprev = widgets.Button(axprev, 'Previous', style="tangerine")
         bprev.on_clicked(callback.prev)
 
         plt.show()
+
+
+@pytest.mark.backend('Qt5Agg')
+def test_radio_buttons():
+    t = np.arange(0.0, 2.0, 0.01)
+    s0 = np.sin(2 * np.pi * t)
+
+    fig, ax = plt.subplots()
+    l, = ax.plot(t, s0, lw=2, color='red')
+    fig.subplots_adjust(left=0.3)
+
+    rax = fig.add_axes([0.05, 0.4, 0.15, 0.15])
+    radio2 = widgets.RadioButtons(rax, ('red', 'blue', 'green'), text_color=['red', 'blue', 'green'],
+                                  border=False, inactive_color='white', activecolor='red', orientation='horizontal')
+
+    def colorfunc(label):
+        l.set_color(label)
+        plt.draw()
+
+    radio2.on_clicked(colorfunc)
+    plt.show()
+
