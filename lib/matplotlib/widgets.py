@@ -1128,7 +1128,7 @@ class TextBox(AxesWidget):
 
     def __init__(self, ax, label, initial='',
                  color='.95', hovercolor='1', label_pad=.01,
-                 textalignment="left"):
+                 textalignment="left", style=''):
         """
         Parameters
         ----------
@@ -1146,9 +1146,45 @@ class TextBox(AxesWidget):
             The distance between the label and the right side of the textbox.
         textalignment : {'left', 'center', 'right'}
             The horizontal location of the text.
+        style : str
+            A preset "style" that changes multiple aspect of the text box's appearance.
+            Preset styles include: standard, dark, livewire, magma, and underwater.
         """
         super().__init__(ax)
 
+        if style == "pastel-blue":
+            color = "#96B9D0"
+            hovercolor = "#BFD4DB"
+        elif style == "lavender":
+            color = "#D8C9FF"
+            hovercolor = "#F3D5FB"
+        elif style == "tangerine":
+            color = "#FEB07C"
+            hovercolor = "#F9CE90"
+        elif style == "pastel-green":
+            color = "#AEDCAE"
+            hovercolor = "#CDEBC5"
+        elif style == "dark-grayscale":
+            color = "#525252"
+            hovercolor = "#323232"
+        elif style == "light-grayscale":
+            color = "#BDBDBD"
+            hovercolor = "#DEDEDE"
+        elif style == "underwater":
+            color = "#01088E"
+            hovercolor = "#00055B"
+        elif style == "sky":
+            color = "#47B7FF"
+            hovercolor = "#1995E5"
+        elif style == "inferno":
+            color = "#FF4900"
+            hovercolor = "#C23800"
+        elif style == '':
+            # Do nothing
+            pass
+        else:
+            raise ValueError('Invalid Style Name')
+        
         self._DIST_FROM_LEFT = .05
 
         self._text_position = _api.check_getitem(
