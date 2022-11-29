@@ -1079,9 +1079,15 @@ class CheckButtons(AxesWidget):
     lines : list of (`.Line2D`, `.Line2D`) pairs
         List of lines for the x's in the check boxes.  These lines exist for
         each box, but have ``set_visible(False)`` when its box is not checked.
+
+    actives : list of bool
+        List of check buttons that are turned on
+
+    autoChange : bool
+        Set this option to True if you wish to activate only one of the check buttons.
     """
 
-    def __init__(self, ax, labels, actives=None, autoChange=False):
+    def __init__(self, ax, labels, actives=None, autoChange=False, fontfamilies=None, fontstyles=None, colors=None):
         """
         Add check buttons to `matplotlib.axes.Axes` instance *ax*.
 
@@ -1097,8 +1103,17 @@ class CheckButtons(AxesWidget):
             The initial check states of the buttons. The list must have the
             same length as *labels*. If not given, all buttons are unchecked.
 
-        autoChange: bool
+        autoChange : bool
             Set this option to True if you wish to activate only one of the check buttons.
+
+        fontfamilies : list of str
+            list of fonts for label
+
+        fontstyles : list of str
+            list of font style for label
+
+        colors : list of str
+            list of font color for label
         """
         super().__init__(ax)
 
@@ -1143,10 +1158,19 @@ class CheckButtons(AxesWidget):
 
         lineparams = {'color': 'k', 'linewidth': 1.25,
                       'transform': ax.transAxes, 'solid_capstyle': 'butt'}
-        for y, label, active in zip(ys, labels, actives):
+        if fontfamilies == None:
+            fontfamilies = ["DejaVu Sans"] * len(labels)
+        if fontstyles == None:
+            fontstyles = ["normal"] * len(labels)
+        if colors == None:
+            colors = ["black"] * len(labels)
+        for y, label, active, fontfamily, fontstyle, color in zip(ys, labels, actives, fontfamilies, fontstyles, colors):
             t = ax.text(0.25, y, label, transform=ax.transAxes,
                         horizontalalignment='left',
-                        verticalalignment='center')
+                        verticalalignment='center',
+                        fontfamily=fontfamily,
+                        fontstyle=fontstyle,
+                        color=color)
 
             w, h = dy / 2, dy / 2
             x, y = 0.05, y - h / 2

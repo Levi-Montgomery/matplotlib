@@ -981,7 +981,10 @@ def test_CheckButton_custom():
     labels = ['red', 'blue', 'green']
     activated = [True, False, False]
     axCheckButton = plt.axes([0.03, 0.4, 0.15, 0.15])
-    chxbox = widgets.CheckButtons(axCheckButton, labels, activated, True)
+    chxbox = widgets.CheckButtons(axCheckButton, labels, activated, True,
+                                  ["Arial Black", "Comic Sans MS", "Arial"],
+                                  ["normal", "italic", "oblique"],
+                                  ["red", "blue", "green"])
 
     def set_visible(label):
         index = labels.index(label)
