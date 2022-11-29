@@ -9,18 +9,19 @@ be too smart with respect to layout -- you will have to figure out how
 wide and tall you want your Axes to be to accommodate your widget.
 """
 
-from contextlib import ExitStack
 import copy
+from contextlib import ExitStack
 from numbers import Integral, Number
 
 import numpy as np
 
 import matplotlib as mpl
+
 from . import (_api, _docstring, backend_tools, cbook, colors, ticker,
                transforms)
 from .lines import Line2D
-from .patches import Circle, Rectangle, Ellipse, Polygon
-from .transforms import TransformedPatchPath, Affine2D
+from .patches import Circle, Ellipse, Polygon, Rectangle
+from .transforms import Affine2D, TransformedPatchPath
 
 
 class LockDraw:
@@ -191,7 +192,7 @@ class Button(AxesWidget):
     """
 
     def __init__(self, ax, label, image=None,
-                 color='0.85', hovercolor='0.95', text_color=".10", text_font="DejaVu Sans", text_style="", style=""):
+                 color='0.85', hovercolor='0.95', text_color=".10", text_font="DejaVu Sans", text_style="normal", style=""):
         """
         Parameters
         ----------
@@ -270,15 +271,7 @@ class Button(AxesWidget):
 
         if image is not None:
             ax.imshow(image)
-        if text_style=="":
-            self.label = ax.text(0.5, 0.5, label,
-                                 verticalalignment='center',
-                                 horizontalalignment='center',
-                                 color=text_color,
-                                 transform=ax.transAxes,
-                                 fontfamily=text_font)
-        else:
-            self.label = ax.text(0.5, 0.5, label,
+        self.label = ax.text(0.5, 0.5, label,
                                  verticalalignment='center',
                                  horizontalalignment='center',
                                  color=text_color,
@@ -1067,7 +1060,7 @@ class RangeSlider(SliderBase):
 
 
 class CheckButtons(AxesWidget):
-    r"""
+    """
     A GUI neutral set of check buttons.
 
     For the check buttons to remain responsive you must keep a
@@ -1086,9 +1079,15 @@ class CheckButtons(AxesWidget):
     lines : list of (`.Line2D`, `.Line2D`) pairs
         List of lines for the x's in the check boxes.  These lines exist for
         each box, but have ``set_visible(False)`` when its box is not checked.
+
+    actives : list of bool
+        List of check buttons that are turned on
+
+    autoChange : bool
+        Set this option to True if you wish to activate only one of the check buttons.
     """
 
-    def __init__(self, ax, labels, actives=None):
+    def __init__(self, ax, labels, actives=None, autoChange=False, fontfamilies=None, fontstyles=None, colors=None):
         """
         Add check buttons to `matplotlib.axes.Axes` instance *ax*.
 
@@ -1103,6 +1102,18 @@ class CheckButtons(AxesWidget):
         actives : list of bool, optional
             The initial check states of the buttons. The list must have the
             same length as *labels*. If not given, all buttons are unchecked.
+
+        autoChange : bool
+            Set this option to True if you wish to activate only one of the check buttons.
+
+        fontfamilies : list of str
+            list of fonts for label
+
+        fontstyles : list of str
+            list of font style for label
+
+        colors : list of str
+            list of font color for label
         """
         super().__init__(ax)
 
@@ -1110,8 +1121,27 @@ class CheckButtons(AxesWidget):
         ax.set_yticks([])
         ax.set_navigate(False)
 
-        if actives is None:
-            actives = [False] * len(labels)
+        self.autoChange = autoChange
+
+        if autoChange:
+            if actives is None:
+                actives = [False] * len(labels)
+                actives[0] = True
+            else:
+                check = True
+                for i in range(0, len(actives)):
+                    if actives[i]:
+                        for j in range(i + 1, len(actives)):
+                            actives[j] = False
+                        check = False
+                        break
+                if check:
+                    actives[0] = True
+            self.actives = actives
+        else:
+            if actives is None:
+                actives = [False] * len(labels)
+
 
         if len(labels) > 1:
             dy = 1. / (len(labels) + 1)
@@ -1128,10 +1158,19 @@ class CheckButtons(AxesWidget):
 
         lineparams = {'color': 'k', 'linewidth': 1.25,
                       'transform': ax.transAxes, 'solid_capstyle': 'butt'}
-        for y, label, active in zip(ys, labels, actives):
+        if fontfamilies == None:
+            fontfamilies = ["DejaVu Sans"] * len(labels)
+        if fontstyles == None:
+            fontstyles = ["normal"] * len(labels)
+        if colors == None:
+            colors = ["black"] * len(labels)
+        for y, label, active, fontfamily, fontstyle, color in zip(ys, labels, actives, fontfamilies, fontstyles, colors):
             t = ax.text(0.25, y, label, transform=ax.transAxes,
                         horizontalalignment='left',
-                        verticalalignment='center')
+                        verticalalignment='center',
+                        fontfamily=fontfamily,
+                        fontstyle=fontstyle,
+                        color=color)
 
             w, h = dy / 2, dy / 2
             x, y = 0.05, y - h / 2
@@ -1139,8 +1178,8 @@ class CheckButtons(AxesWidget):
             p = Rectangle(xy=(x, y), width=w, height=h, edgecolor='black',
                           facecolor=axcolor, transform=ax.transAxes)
 
-            l1 = Line2D([x, x + w], [y + h, y], **lineparams)
-            l2 = Line2D([x, x + w], [y, y + h], **lineparams)
+            l1 = Line2D([x + w / 7, x + w * 4 / 10], [y + h / 2, y + h / 5], **lineparams)
+            l2 = Line2D([x + w * 3 / 10, x + w * 4 / 5], [y + h / 5, y + h * 4 / 5], **lineparams)
 
             l1.set_visible(active)
             l2.set_visible(active)
@@ -1161,7 +1200,18 @@ class CheckButtons(AxesWidget):
         for i, (p, t) in enumerate(zip(self.rectangles, self.labels)):
             if (t.get_window_extent().contains(event.x, event.y) or
                     p.get_window_extent().contains(event.x, event.y)):
+                if self.autoChange and self.actives[i]:
+                    return
                 self.set_active(i)
+                if self.autoChange:
+                    for j in range(0, len(self.actives)):
+                        if j == i:
+                            continue
+                        if self.actives[j]:
+                            self.actives[j] = False
+                            self.set_active(j)
+                            break
+                    self.actives[i] = True
                 break
 
     def set_active(self, index):
